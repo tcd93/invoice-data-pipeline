@@ -56,6 +56,7 @@ After task completion, you should now see **warehouse** bucket filled:
 [1]: https://www.devspace.sh/
 [2]: https://airflow.apache.org/docs/apache-airflow/stable/authoring-and-scheduling/dagfile-processing.html
 [3]: https://airflow.apache.org/docs/apache-airflow/stable/authoring-and-scheduling/dynamic-task-mapping.html
+
 ---
 ### 4. **Set up Dashboard**
 Access the BI app at: [http://localhost:32000](http://localhost:32000)
@@ -162,5 +163,5 @@ CALL system.sync_partition_metadata('warehouse', 'invoices_menu', 'ADD');
 
 #### 3. **Visualize results**
 I won't go into details on using Superset (that's for the data analyst folks xD), 
-but it's quite simple to use and makes creating beautiful charts like this very easy.
+but it's quite simple to use and makes creating beautiful charts like this very easy.  
 ![Pie Chart](pie_chart.png)
