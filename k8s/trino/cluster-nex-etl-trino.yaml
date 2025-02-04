@@ -1,0 +1,68 @@
+# https://trino.io/docs/current/installation/kubernetes.html#creating-your-own-yaml-configuration
+image:
+  tag: "468"
+  pullPolicy: "IfNotPresent"
+service:
+  type: NodePort
+coordinator:
+  labels:
+    app: trino
+    role: coordinator
+  # for local development, keep these numbers low
+  # note that maxHeapSize must be > maxMemoryPerNode + heapHeadroomPerNode
+  jvm:
+    maxHeapSize: "1G"
+  additionalJVMConfig:
+  - "-XX:InitialRAMPercentage=80"
+  - "-XX:MaxRAMPercentage=80"
+  - "-XX:G1HeapRegionSize=32M"
+  - "-XX:+ExplicitGCInvokesConcurrent"
+  - "-XX:+ExitOnOutOfMemoryError"
+  - "-XX:+HeapDumpOnOutOfMemoryError"
+  - "-XX:-OmitStackTraceInFastThrow"
+  - "-XX:ReservedCodeCacheSize=512M"
+  - "-Djdk.attach.allowAttachSelf=true"
+  - "-Dfile.encoding=UTF-8"
+  - "-XX:+EnableDynamicAgentLoading"
+  config:
+    query:
+      maxMemoryPerNode: "768MB"
+    memory:
+      heapHeadroomPerNode: "128MB"
+  additionalExposedPorts:
+    https:
+      servicePort: 8443
+      name: https
+      protocol: TCP
+      port: 8443
+      nodePort: 30443
+worker:
+  labels:
+    app: trino
+    role: worker
+  jvm:
+    maxHeapSize: "4G"
+envFrom:
+- secretRef:
+    name: trino
+server: 
+  workers: 0 #scale the number of workers here (set to 0 to use coordinator as worker instead)
+  autoscaling:
+    enabled: false
+  config:
+    authenticationType: JWT
+    https:
+      enabled: true
+      port: 8443
+      keystore:
+        path: /run/secrets/trino/certificate
+  coordinatorExtraConfig: |-
+    http-server.authentication.jwt.key-file=/run/secrets/trino/jwt_hmac
+    internal-communication.shared-secret=pW1JeZSw3rAl2/ue+EdCw/tHcKdh0O4uVhMnG/GDWJeqQ8xRaVmoa252c46S55mvt58sjvPD42Oro90ZTblHMIIwSOZjCbBQNwwERIRz5YEQUyZQvLHKV2UV8aqZUg9P5O90UX3HIwoZVD4PY7cBiTfo3/4gRojZyDUStP769PJchNVbEk+eY8WFXz1lpfeietumFnHEIQ5aYsIUk/7hIAhvDUKY5Ibz7/lEGtSQm+EShVh5BjqSZ5otmneHhqXaKCtBN72/AhRITeIdMCySZwb6JIXRcKXjBCO3q/52fKKlHt2ME/oYIwAO2mY1VSGlUN4KMia+3PBHVF2WYcfm2OavWJaKqxj0UzJ39YmsC2FV/DlJJUIUO+fDaAai+TjrdZY0HbPn9jRSw8dfVNrvxuDnmTvA6cFku40Q0VEVrvcIueuMNjYIAI7xgWXKo36QNOOIPqOhZqzxL1XgV5VQY1GiONcVbEdxbUeW97HKmVsRv0lpw76xzKsdpFovbngVj6rHLkMSiWX0T5RJ+8I3szX7lbYS/B1MOBKWdz7pZkYRCq9GbYujc68QWYIpVR08Oiv2WLvwCsd6ZzXELbq40QFpdzG7EaG/EMbt9Och47gSKzQoV4XTaLr2sAMP/t/+pwxg/czeuPN5m54ho8tsmjb/pwP+FPZ2WJqwpqLH8C8=
+    http-server.authentication.allow-insecure-over-http=true
+  workerExtraConfig: |-
+    internal-communication.shared-secret=pW1JeZSw3rAl2/ue+EdCw/tHcKdh0O4uVhMnG/GDWJeqQ8xRaVmoa252c46S55mvt58sjvPD42Oro90ZTblHMIIwSOZjCbBQNwwERIRz5YEQUyZQvLHKV2UV8aqZUg9P5O90UX3HIwoZVD4PY7cBiTfo3/4gRojZyDUStP769PJchNVbEk+eY8WFXz1lpfeietumFnHEIQ5aYsIUk/7hIAhvDUKY5Ibz7/lEGtSQm+EShVh5BjqSZ5otmneHhqXaKCtBN72/AhRITeIdMCySZwb6JIXRcKXjBCO3q/52fKKlHt2ME/oYIwAO2mY1VSGlUN4KMia+3PBHVF2WYcfm2OavWJaKqxj0UzJ39YmsC2FV/DlJJUIUO+fDaAai+TjrdZY0HbPn9jRSw8dfVNrvxuDnmTvA6cFku40Q0VEVrvcIueuMNjYIAI7xgWXKo36QNOOIPqOhZqzxL1XgV5VQY1GiONcVbEdxbUeW97HKmVsRv0lpw76xzKsdpFovbngVj6rHLkMSiWX0T5RJ+8I3szX7lbYS/B1MOBKWdz7pZkYRCq9GbYujc68QWYIpVR08Oiv2WLvwCsd6ZzXELbq40QFpdzG7EaG/EMbt9Och47gSKzQoV4XTaLr2sAMP/t/+pwxg/czeuPN5m54ho8tsmjb/pwP+FPZ2WJqwpqLH8C8=
+secretMounts:
+- name: trino
+  secretName: trino
+  path: /run/secrets/trino

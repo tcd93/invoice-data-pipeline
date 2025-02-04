@@ -1,0 +1,3 @@
+.airflow.var
+*.values.yaml
+.devspace

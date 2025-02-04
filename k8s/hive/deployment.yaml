@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hive-metastore
+spec:
+  selector:
+    matchLabels:
+      app: hive-metastore
+  template:
+    metadata:
+      labels:
+        app: hive-metastore
+    spec:
+      containers:
+      - name: hive-metastore
+        image: naushadh/hive-metastore
+        ports:
+        - containerPort: 9083
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+        env:
+        - name: DATABASE_HOST
+          value: postgres
+        - name: DATABASE_DB
+          value: hive_metastore
+        - name: DATABASE_USER
+          value: hive
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres
+              key: metastore-password
+        - name: S3_ENDPOINT_URL
+          value: http://minio:9000
+        - name: S3_BUCKET
+          value: lake # default bucket created by setup_minio.sh
+        - name: S3_PREFIX
+          value: hive
+        - name: AWS_ACCESS_KEY
+          value: admin
+        - name: AWS_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: minio-secret
+              key: password

@@ -1,0 +1,53 @@
+# https://github.com/apache/superset/blob/master/helm/superset/values.yaml
+postgresql:
+  enabled: false # use postgres pod from k8s/postgres
+redis:
+  enabled: true # create new 
+  architecture: standalone
+supersetWorker:
+  replicas:
+    enabled: false
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "256Mi"
+    limits:
+      cpu: "1000m"
+      memory: "512Mi"
+supersetNode:
+  replicas:
+    enabled: false
+  connections:
+    db_host: postgres
+    db_user: superset
+    db_name: superset
+    # db_pass: set by env variable DB_PASS
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "256Mi"
+    limits:
+      cpu: "1000m"
+      memory: "512Mi"
+service:
+  type: NodePort
+  port: 8088
+  nodePort:
+    http: 32000
+extraEnvRaw:
+- name: DB_PASS
+  valueFrom:
+    secretKeyRef:
+      name: postgres
+      key: superset-password
+- name: SUPERSET_SECRET_KEY
+  valueFrom:
+    secretKeyRef:
+      name: superset
+      key: secret-key
+bootstrapScript: |
+  #!/bin/bash
+  pip install psycopg2-binary==2.9.6 \
+    trino \
+    prophet
+  if [ ! -f ~/bootstrap ]; then echo "Running Superset with uid {{ .Values.runAsUser }}" > ~/bootstrap; fi

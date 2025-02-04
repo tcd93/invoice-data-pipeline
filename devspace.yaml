@@ -1,0 +1,11 @@
+version: v2beta1 
+name: k8s 
+dev: 
+  airflow-scheduler: 
+    labelSelector:
+      app: airflow
+      component: scheduler
+    sync: 
+    - path: ./pipe/dags:/opt/airflow/dags 
+    ssh: 
+      enabled: true

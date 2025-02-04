@@ -1,0 +1,111 @@
+# https://github.com/apache/airflow/blob/main/chart/values.yaml
+
+airflowVersion: "2.10.4"
+# custom Airflow image that contains additional Python packages (built in deploy.sh)
+defaultAirflowRepository: flickering
+defaultAirflowTag: latest
+
+images:
+  airflow:
+    pullPolicy: Never
+
+useStandardNaming: true
+labels:
+  app: airflow
+
+# will look for "fernet-key" key name in secret
+fernetKeySecretName: airflow
+# will look for "webserver-secret-key" key name in secret
+webserverSecretKeySecretName: airflow
+
+data:
+  # will look for "connection" key name in secret
+  metadataSecretName: airflow
+
+
+executor: LocalExecutor
+
+env:
+- name: AIRFLOW__CORE__MAX_ACTIVE_TASKS_PER_DAG
+  value: "1"
+- name: AIRFLOW__CORE__MAX_ACTIVE_RUNS_PER_DAG
+  value: "4"
+- name: AIRFLOW__CORE__TEST_CONNECTION
+  value: "enabled"
+
+extraEnvFrom: |
+  - secretRef:
+      name: airflow-connections
+
+# We are simply using DevSpace to copy the codes from the host to the pod
+dags:
+  persistence:
+    enabled: true
+  gitSync:
+    enabled: false
+
+# https://airflow.apache.org/docs/helm-chart/stable/production-guide.html#database
+postgresql:
+  enabled: false
+
+scheduler:
+  labels:
+    role: scheduler
+  logGroomerSidecar:
+    enabled: false # enable if you want to groom logs after x days
+    retentionDays: 30
+  resources:
+    limits:
+      cpu: 3000m
+      memory: 6Gi
+    requests:
+      cpu: 1000m
+      memory: 1Gi
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+
+webserver:
+  enabled: true
+  labels:
+    role: webserver
+  service:
+    type: NodePort
+    ports:
+      - name: airflow-ui
+        port: 8080
+        targetPort: 8080
+        nodePort: 30080
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1024Mi
+    requests:
+      cpu: 250m
+      memory: 512Mi
+  strategy:
+    type: Recreate
+  
+logs:
+  persistence:
+    enabled: true
+    size: 1Gi
+
+triggerer:
+  enabled: true
+  labels:
+    role: triggerer
+  logGroomerSidecar:
+    enabled: false # enable if you want to groom logs after x days
+    retentionDays: 30
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+statsd:
+  enabled: false

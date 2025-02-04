@@ -1,0 +1,27 @@
+# https://github.com/minio/minio/blob/master/helm/minio/values.yaml
+mode: standalone ## other supported values are "distributed"
+replicas: 1
+persistence:
+  enabled: true
+resources:
+  requests:
+    cpu: "100m"
+    memory: "256Mi"
+buckets:
+- name: lake
+- name: warehouse
+serviceAccount:
+  create: false
+service:
+  type: NodePort
+  port: 9000
+  nodePort: 31000
+consoleService:
+  type: NodePort
+  port: 9001
+  nodePort: 31001
+users:
+- accessKey: admin
+  existingSecret: minio-secret
+  existingSecretKey: password
+  policy: consoleAdmin

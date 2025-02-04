@@ -1,0 +1,8 @@
+apache-airflow-providers-common-sql
+apache-airflow[crypto,celery,redis,amazon,trino]
+awswrangler
+pytest
+sqlparse
+transformers
+pillow
+sentencepiece

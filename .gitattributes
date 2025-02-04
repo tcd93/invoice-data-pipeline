@@ -1,0 +1,5 @@
+*.sh         eol=lf
+*.sql        eol=lf
+*.conf       eol=lf
+*.env        eol=lf
+*.var        eol=lf

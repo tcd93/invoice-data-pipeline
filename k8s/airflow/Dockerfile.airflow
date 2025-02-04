@@ -1,0 +1,14 @@
+FROM apache/airflow:2.10.3-python3.12
+
+USER airflow
+
+COPY ./requirements.txt /
+RUN pip install --no-cache-dir -r /requirements.txt
+COPY ./requirements-torch.txt /
+RUN pip install --no-cache-dir -r /requirements-torch.txt --index-url https://download.pytorch.org/whl/cpu
+
+# pre-download Donut model
+COPY ./download_model.py /
+RUN python /download_model.py
+
+WORKDIR /opt/airflow/dags

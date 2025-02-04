@@ -1,0 +1,11 @@
+{
+    "python.analysis.diagnosticMode": "workspace",
+    "python.analysis.typeEvaluation.strictListInference": true,
+    "python.analysis.typeEvaluation.strictDictionaryInference": true,
+    "python.envFile": "${workspaceFolder}/../docker/.airflow.var",
+    "python.experiments.enabled": true,
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": true,
+    },
+}
