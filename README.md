@@ -5,6 +5,12 @@
 TL;DR  
 ![Data flow](flow.png)  
 
+Raw data (images and CSV) from repo's [/k8s/object_store](./k8s/object_store) will be transformed into 
+beautiful numbers displayed in Apache Superset.
+
+> * Invoice images are sampled from CORDv2 dataset  
+> * CSV file is from [Kaggle](https://www.kaggle.com/code/mahabubsheikh/cafe-sales-dirty-data-for-cleaning)
+
 ## Requirement
 - **[Docker for Desktop](https://www.docker.com/products/docker-desktop/)** (Enable Kubernetes and WSL2) or **minikube**
 - [Helm](https://helm.sh/docs/intro/install/)
