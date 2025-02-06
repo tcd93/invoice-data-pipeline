@@ -11,6 +11,8 @@ beautiful numbers displayed in Apache Superset.
 > * Invoice images are sampled from CORDv2 dataset  
 > * CSV file is from [Kaggle](https://www.kaggle.com/code/mahabubsheikh/cafe-sales-dirty-data-for-cleaning)
 
+> This is a simplified data pipeline, meant to be run on a single machine (e.g. your laptop). In a production environment, the Airflow would only act as a scheduler to trigger jobs on a separate Spark Cluster. Trino is probably not needed in this case, and can be replaced with SparkSQL.
+
 ## Requirement
 - **[Docker for Desktop](https://www.docker.com/products/docker-desktop/)** (Enable Kubernetes and WSL2) or **minikube**
 - [Helm](https://helm.sh/docs/intro/install/)
